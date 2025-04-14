@@ -1,11 +1,31 @@
 import { Image, StyleSheet, Platform } from 'react-native';
+import { useState, useEffect } from 'react';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { ToggleSwitch } from '@/components/ui/ToggleSwitch';
+import { websocketService } from '@/services/websocket';
 
 export default function HomeScreen() {
+  const [isDemoEnabled, setIsDemoEnabled] = useState(false);
+
+  useEffect(() => {
+    // Connect to WebSocket when component mounts
+    websocketService.connect();
+
+    // Cleanup on unmount
+    return () => {
+      websocketService.disconnect();
+    };
+  }, []);
+
+  const handleToggle = (value: boolean) => {
+    setIsDemoEnabled(value);
+    websocketService.sendToggleState(value);
+  };
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -16,9 +36,21 @@ export default function HomeScreen() {
         />
       }>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
+        <ThemedText type="title">LightAnywhere</ThemedText>
         <HelloWave />
       </ThemedView>
+
+      <ThemedView style={styles.toggleContainer}>
+        <ThemedText type="subtitle">Try the Toggle Switch</ThemedText>
+        <ThemedView style={styles.toggleRow}>
+          <ThemedText>Toggle Demo: {isDemoEnabled ? 'ON' : 'OFF'}</ThemedText>
+          <ToggleSwitch
+            value={isDemoEnabled}
+            onValueChange={handleToggle}
+          />
+        </ThemedView>
+      </ThemedView>
+
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 1: Try it</ThemedText>
         <ThemedText>
@@ -60,6 +92,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
+  toggleContainer: {
+    gap: 16,
+    marginBottom: 24,
+    padding: 24,
+    borderRadius: 16,
+    backgroundColor: 'rgba(161, 206, 220, 0.1)',
+  },
+  toggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 8,
+  },
   stepContainer: {
     gap: 8,
     marginBottom: 8,
@@ -72,3 +117,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
 });
+
+
+
