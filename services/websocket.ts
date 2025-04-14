@@ -1,6 +1,6 @@
 class WebSocketService {
   private ws: WebSocket | null = null;
-  private readonly url = 'ws://localhost:8080';
+  private readonly url = 'ws://localhost:8081';
 
   connect() {
     if (!this.ws || this.ws.readyState === WebSocket.CLOSED) {
