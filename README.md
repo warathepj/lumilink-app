@@ -1,50 +1,107 @@
-# Welcome to your Expo app 👋
+# LightAnywhere
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A real-time light control system with mobile app, backend server, and simulator components.
 
-## Get started
+## 🏗️ Project Structure
 
-1. Install dependencies
+The project consists of three main components:
 
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-    npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+/
+├── app/            # Mobile application (Expo/React Native)
+├── backend/        # MQTT broker and WebSocket server
+└── sim/            # Light simulator
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## 🚀 Getting Started
 
-## Learn more
+### Prerequisites
 
-To learn more about developing your project with Expo, look at the following resources:
+- Node.js (LTS version recommended)
+- npm or yarn
+- Expo Go app (for mobile development)
+- iOS Simulator (for iOS development on macOS)
+- Android Studio & Android Emulator (for Android development)
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### Repository
 
-## Join the community
+```bash
+https://github.com/warathepj/lightanywhere.git
+https://github.com/warathepj/lightanywhere-backend.git
+https://github.com/warathepj/lightanywhere-simulator.git
+```
 
-Join our community of developers creating universal apps.
+### Installation and Setup
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+#### 1. Mobile App (app/)
+
+```bash
+cd app
+npm install
+npx expo start
+```
+
+Development options:
+
+- Use Expo Go app for physical device testing
+- Press 'i' for iOS Simulator
+- Press 'a' for Android Emulator
+- Press 'w' for web browser
+
+#### 2. Backend Server (backend/)
+
+```bash
+cd backend
+npm install
+# Start the publisher
+npm start
+# Start the subscriber (in a new terminal)
+node subscriber.js
+```
+
+The backend provides:
+
+- MQTT broker connection (test.mosquitto.org:1883) _for test only, not for production_
+- WebSocket server for real-time communication
+- Message handling between app and simulator
+
+#### 3. Simulator (sim/)
+
+```bash
+cd sim
+# open index.html with browser or use live server
+```
+
+## 📡 Communication Flow
+
+```
+Mobile App <-> Backend (MQTT/WebSocket) <-> Simulator
+```
+
+- MQTT Topic: `lightanywhere/toggle` _create your own topic_
+- WebSocket Ports:
+  - Publisher: 8081
+  - Subscriber: 8085
+
+## 🛠️ Built With
+
+### Mobile App
+
+- [Expo](https://expo.dev/) - Development platform
+- [React Native](https://reactnative.dev/) - Mobile framework
+- [TypeScript](https://www.typescriptlang.org/) - Programming language
+
+### Backend
+
+- [MQTT.js](https://github.com/mqttjs/MQTT.js) - MQTT client
+- [ws](https://github.com/websockets/ws) - WebSocket server
+- Node.js
+
+### Simulator
+
+- WebSocket client
+- Real-time light state visualization
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details
