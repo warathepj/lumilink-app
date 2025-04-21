@@ -1,45 +1,57 @@
+import { ToggleSwitchMessage, ToggleUpdateMessage } from '../types/toggle';
+
 class WebSocketService {
   private ws: WebSocket | null = null;
-  private readonly url = 'ws://localhost:8081';
+  private isConnected: boolean = false;
+  private reconnectAttempts: number = 0;
+  private reconnectTimeout: NodeJS.Timeout | null = null;
 
   connect() {
-    if (!this.ws || this.ws.readyState === WebSocket.CLOSED) {
-      this.ws = new WebSocket(this.url);
-
+    try {
+      this.ws = new WebSocket('ws://localhost:8085');
+      
       this.ws.onopen = () => {
-        console.log('Connected to WebSocket');
+        console.log('WebSocket connected');
+        this.isConnected = true;
+        this.reconnectAttempts = 0;
       };
-
+      
       this.ws.onmessage = (event) => {
         try {
-          const data = JSON.parse(event.data);
-          console.log('Received message:', data);
+          const data = JSON.parse(event.data) as ToggleUpdateMessage;
+          console.log('WebSocket message received:', data);
+          
+          if (data.type === 'TOGGLE_UPDATE') {
+            console.log('Device state updated:', data.value);
+          }
         } catch (error) {
-          console.error('Error parsing message:', error);
+          console.error('Error parsing WebSocket message:', error);
         }
       };
-
-      this.ws.onerror = (error) => {
-        console.error('WebSocket error:', error);
-      };
-
-      this.ws.onclose = () => {
-        console.log('Disconnected from WebSocket');
-        // Attempt to reconnect after 5 seconds
-        setTimeout(() => this.connect(), 5000);
-      };
+    } catch (error) {
+      console.error('WebSocket connection error:', error);
     }
   }
 
-  sendToggleState(value: boolean) {
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify({
+  sendToggleState(isOn: boolean, room: string = 'Living Room') {
+    if (!this.isConnected) {
+      console.warn('WebSocket not connected. Attempting to connect...');
+      this.connect();
+      return;
+    }
+    
+    try {
+      const message: ToggleSwitchMessage = {
         type: 'TOGGLE_SWITCH',
-        value,
+        value: isOn,
+        room: room,
         timestamp: new Date().toISOString()
-      }));
-    } else {
-      console.warn('WebSocket is not connected');
+      };
+      
+      this.ws?.send(JSON.stringify(message));
+      console.log('Sent toggle state:', message);
+    } catch (error) {
+      console.error('Error sending WebSocket message:', error);
     }
   }
 
@@ -48,6 +60,13 @@ class WebSocketService {
       this.ws.close();
       this.ws = null;
     }
+    
+    if (this.reconnectTimeout) {
+      clearTimeout(this.reconnectTimeout);
+    }
+    
+    this.isConnected = false;
+    console.log('WebSocket disconnected');
   }
 }
 

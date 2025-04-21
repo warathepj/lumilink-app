@@ -1,122 +1,42 @@
-import { Image, StyleSheet, Platform } from 'react-native';
-import { useState, useEffect } from 'react';
+// App.js
+import * as React from 'react';
+import { View, StyleSheet, StatusBar } from 'react-native';
+import RoomsScreen from './screens/RoomsScreen';
+import { ToggleSwitchMessage } from '../../types/toggle';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { ToggleSwitch } from '@/components/ui/ToggleSwitch';
-import { websocketService } from '@/services/websocket';
-
-export default function HomeScreen() {
-  const [isDemoEnabled, setIsDemoEnabled] = useState(false);
-
-  useEffect(() => {
-    // Connect to WebSocket when component mounts
-    websocketService.connect();
-
-    // Cleanup on unmount
-    return () => {
-      websocketService.disconnect();
+export default function TabOneScreen() {
+  const handleLivingRoomToggle = (isOn: boolean) => {
+    // Create message following ToggleSwitchMessage interface
+    const toggleMessage: ToggleSwitchMessage = {
+      type: 'TOGGLE_SWITCH',
+      value: isOn,
+      room: 'Living Room',
+      timestamp: new Date().toISOString()
     };
-  }, []);
-
-  const handleToggle = (value: boolean) => {
-    setIsDemoEnabled(value);
-    websocketService.sendToggleState(value);
+    
+    // Log the message to console
+    console.log('Toggle Message:', toggleMessage);
+    console.log(`Living Room light turned ${isOn ? 'ON' : 'OFF'}`);
   };
 
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">LightAnywhere</ThemedText>
-        <HelloWave />
-      </ThemedView>
-
-      <ThemedView style={styles.toggleContainer}>
-        <ThemedText type="subtitle">Try the Toggle Switch</ThemedText>
-        <ThemedView style={styles.toggleRow}>
-          <ThemedText>Toggle Demo: {isDemoEnabled ? 'ON' : 'OFF'}</ThemedText>
-          <ToggleSwitch
-            value={isDemoEnabled}
-            onValueChange={handleToggle}
-          />
-        </ThemedView>
-      </ThemedView>
-
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <View style={styles.container}>
+      <StatusBar backgroundColor="#1a1a1a" barStyle="light-content" />
+      <RoomsScreen room="Living Room" onToggle={handleLivingRoomToggle} />
+      <RoomsScreen room="Bedroom" />
+      <RoomsScreen room="Kitchen" />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  toggleContainer: {
-    gap: 16,
-    marginBottom: 24,
-    padding: 24,
-    borderRadius: 16,
-    backgroundColor: 'rgba(161, 206, 220, 0.1)',
-  },
-  toggleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  container: {
+    flex: 1,
+    backgroundColor: '#121212',
+    padding: 20,
   },
 });
+
 
 
 
