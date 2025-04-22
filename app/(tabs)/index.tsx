@@ -3,6 +3,7 @@ import * as React from 'react';
 import { View, StyleSheet, StatusBar } from 'react-native';
 import RoomsScreen from './screens/RoomsScreen';
 import { ToggleSwitchMessage } from '../../types/toggle';
+import { websocketService } from '../../services/websocket';
 
 export default function TabOneScreen() {
   const handleLivingRoomToggle = (isOn: boolean) => {
@@ -17,6 +18,9 @@ export default function TabOneScreen() {
     // Log the message to console
     console.log('Toggle Message:', toggleMessage);
     console.log(`Living Room light turned ${isOn ? 'ON' : 'OFF'}`);
+
+    // Use the websocketService instead of direct WebSocket connection
+    websocketService.sendToggleState(isOn, 'Living Room');
   };
 
   return (
@@ -36,6 +40,8 @@ const styles = StyleSheet.create({
     padding: 20,
   },
 });
+
+
 
 
 
