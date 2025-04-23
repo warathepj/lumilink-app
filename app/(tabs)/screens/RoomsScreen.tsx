@@ -22,9 +22,8 @@ const RoomScreen = ({ room, onToggle }) => {
       // Replace with actual IoT API call
       const newState = !isLampOn;
       
-      // Only send WebSocket message for Living Room
-      if (room === 'Living Room') {
-        // Send the toggle state through WebSocket
+      // Handle all rooms
+      if (room === 'Living Room' || room === 'Bedroom' || room === 'Kitchen') {
         websocketService.sendToggleState(newState, room);
         onToggle?.(newState); // Call the onToggle callback if provided
       } else {

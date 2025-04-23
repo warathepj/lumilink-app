@@ -23,12 +23,40 @@ export default function TabOneScreen() {
     websocketService.sendToggleState(isOn, 'Living Room');
   };
 
+  const handleBedroomToggle = (isOn: boolean) => {
+    // Create message following ToggleSwitchMessage interface
+    const toggleMessage: ToggleSwitchMessage = {
+      type: 'TOGGLE_SWITCH',
+      value: isOn,
+      room: 'Bedroom',
+      timestamp: new Date().toISOString()
+    };
+    
+    // Log the message to console
+    console.log('Toggle Message:', toggleMessage);
+    console.log(`Bedroom light turned ${isOn ? 'ON' : 'OFF'}`);
+    websocketService.sendToggleState(isOn, 'Bedroom');
+  };
+
+  const handleKitchenToggle = (isOn: boolean) => {
+    const toggleMessage: ToggleSwitchMessage = {
+      type: 'TOGGLE_SWITCH',
+      value: isOn,
+      room: 'Kitchen',
+      timestamp: new Date().toISOString()
+    };
+    
+    console.log('Toggle Message:', toggleMessage);
+    console.log(`Kitchen light turned ${isOn ? 'ON' : 'OFF'}`);
+    websocketService.sendToggleState(isOn, 'Kitchen');
+  };
+
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="#1a1a1a" barStyle="light-content" />
       <RoomsScreen room="Living Room" onToggle={handleLivingRoomToggle} />
-      <RoomsScreen room="Bedroom" />
-      <RoomsScreen room="Kitchen" />
+      <RoomsScreen room="Bedroom" onToggle={handleBedroomToggle} />
+      <RoomsScreen room="Kitchen" onToggle={handleKitchenToggle} />
     </View>
   );
 }
@@ -40,6 +68,8 @@ const styles = StyleSheet.create({
     padding: 20,
   },
 });
+
+
 
 
 
